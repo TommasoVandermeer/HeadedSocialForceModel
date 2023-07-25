@@ -3,9 +3,24 @@ import numpy as np
 
 def map_def():
     segments = {}
-    segments[0] = np.array([[0, 0], [0, 25]]).transpose()
-    segments[1] = np.array([[5, 0], [5, 25]]).transpose()
-    segments[2] = np.array([[1.5, 5], [3.5, 9]]).transpose()
+    # segments[0] = np.array([[0, 0], [0, 25]]).transpose()
+    # segments[1] = np.array([[5, 0], [5, 25]]).transpose()
+    # Positive X-axis Wall
+    segments[0] = np.array([1.1,2.5],[1.1,-2.5]).transpose()
+    segments[1] = np.array([1.1,-2.5],[0.9,-2.5]).transpose()
+    segments[2] = np.array([0.9,-2.5],[0.9,2.5]).transpose()
+    segments[3] = np.array([0.9,2.5],[1.1,2.5]).transpose()
+    # Negative X-axis Wall
+    segments[4] = np.array([-1.1,2.5],[-1.1,-2.5]).transpose()
+    segments[5] = np.array([-1.1,-2.5],[-0.9,-2.5]).transpose()
+    segments[6] = np.array([-0.9,-2.5],[-0.9,2.5]).transpose()
+    segments[7] = np.array([-0.9,2.5],[-1.1,2.5]).transpose()
+    # Obstacle
+    segments[8] = np.array([1,1],[1,0]).transpose()
+    segments[9] = np.array([1,0],[0,0]).transpose()
+    segments[10] = np.array([0,0],[0,1]).transpose()
+    segments[11] = np.array([0,1],[1,1]).transpose()
+
     # segments_number = segments.__len__()
 
     map_walls = np.array([[0,0]])

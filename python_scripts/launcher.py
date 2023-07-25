@@ -19,20 +19,23 @@ tau, A, B, Aw, Bw, k1, k2, kd, ko, k1g, k2g, d_o, d_f, alpha = parameters_load()
 # Number of individuals in each group
 # Define n_i the number of individuals in group i, then
 # n_groups = [n_1, n_2, ..., n_N];
-n_groups = [4, 4]
+# n_groups = [4, 4]
+n_groups = [1]
 # Total number of individuals
 N = sum(n_groups)
 
 # s{i} contains the starting point of group i
 s = {}
-s[0] = [2.5, 0]
-s[1] = [2.5, 25]
+# s[0] = [2.5, 0]
+# s[1] = [2.5, 25]
+s[0] = [-0.2, 5]
 
 # waypoints sequence
 e_seq = {}
 # e_seq{i} contains the points through which the members of group i have to pass
-e_seq[0] = np.array([s[0], [4, 10], [2.5, 25]]).transpose()
-e_seq[1] = np.array([s[1], [1, 10],  [2.5, 0]]).transpose()
+# e_seq[0] = np.array([s[0], [4, 10], [2.5, 25]]).transpose()
+# e_seq[1] = np.array([s[1], [1, 10],  [2.5, 0]]).transpose()
+e_seq[0] = np.array([s[0], [-0.2, -5], [-2, -1.25], [-2, 1.25], [-0.2, 5]]).transpose()
 
 e_n = {}        # Number of waypoints
 e_ind = {}      # auxiliary index
