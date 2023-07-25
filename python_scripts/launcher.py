@@ -50,14 +50,14 @@ am = 2
 
 # Individual characteristics
 # Radius
-rm = 0.25  # minimum radius
-rM = 0.35  # maximum radius
+rm = 0.34 # minimum radius
+rM = 0.36  # maximum radius
 # Mass
-mm = 60  # minimum mass
-mM = 90  # maximum mass
+mm = 74  # minimum mass
+mM = 76  # maximum mass
 # Desired speed
-v0m = 1  # minimum speed
-v0M = 1.2  # maximum speed
+v0m = 0.89  # minimum speed
+v0M = 0.91  # maximum speed
 
 # Initialization
 map_walls, num_walls, r, m, J, v0, v, th, omg, group_membership, X0, p = initialization(n_groups, N, rm, rM, mm, mM, v0m, v0M, s, am)
@@ -119,7 +119,7 @@ tspan = np.arange(0, TF, t_fine)
 cir = np.arange(0,2*np.pi,0.01)
 
 color=[]
-if N==n_groups[1]:
+if N==n_groups[0]:
     # Only one group of people (random color assigned to each individual)
     color=np.random.rand(N,3)
 else:
