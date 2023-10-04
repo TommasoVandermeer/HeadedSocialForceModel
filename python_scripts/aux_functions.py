@@ -6,20 +6,22 @@ def map_def():
     # segments[0] = np.array([[0, 0], [0, 25]]).transpose()
     # segments[1] = np.array([[5, 0], [5, 25]]).transpose()
     # Positive X-axis Wall
-    segments[0] = np.array([[1.1, 2.5], [1.1, -2.5]]).transpose()
-    segments[1] = np.array([[1.1, -2.5], [0.9, -2.5]]).transpose()
-    segments[2] = np.array([[0.9, -2.5], [0.9, 2.5]]).transpose()
-    segments[3] = np.array([[0.9, 2.5], [1.1, 2.5]]).transpose()
-    # Negative X-axis Wall
-    segments[4] = np.array([[-1.1, 2.5], [-1.1, -2.5]]).transpose()
-    segments[5] = np.array([[-1.1, -2.5], [-0.9, -2.5]]).transpose()
-    segments[6] = np.array([[-0.9, -2.5], [-0.9, 2.5]]).transpose()
-    segments[7] = np.array([[-0.9, 2.5], [-1.1, 2.5]]).transpose()
-    # Obstacle
-    segments[8] = np.array([[1, 1], [1, 0]]).transpose()
-    segments[9] = np.array([[1, 0], [0, 0]]).transpose()
-    segments[10] = np.array([[0, 0], [0, 1]]).transpose()
-    segments[11] = np.array([[0, 1], [1, 1]]).transpose()
+    # segments[0] = np.array([[1.1, 2.5], [1.1, -2.5]]).transpose()
+    # segments[1] = np.array([[1.1, -2.5], [0.9, -2.5]]).transpose()
+    # segments[2] = np.array([[0.9, -2.5], [0.9, 2.5]]).transpose()
+    # segments[3] = np.array([[0.9, 2.5], [1.1, 2.5]]).transpose()
+    # # Negative X-axis Wall
+    # segments[4] = np.array([[-1.1, 2.5], [-1.1, -2.5]]).transpose()
+    # segments[5] = np.array([[-1.1, -2.5], [-0.9, -2.5]]).transpose()
+    # segments[6] = np.array([[-0.9, -2.5], [-0.9, 2.5]]).transpose()
+    # segments[7] = np.array([[-0.9, 2.5], [-1.1, 2.5]]).transpose()
+    # # Obstacle
+    # segments[8] = np.array([[1, 1], [1, 0]]).transpose()
+    # segments[9] = np.array([[1, 0], [0, 0]]).transpose()
+    # segments[10] = np.array([[0, 0], [0, 1]]).transpose()
+    # segments[11] = np.array([[0, 1], [1, 1]]).transpose()
+
+    # segments[0] = np.array([[8,8],[8.1,8.1]]).transpose()
 
     # segments_number = segments.__len__()
 
@@ -62,6 +64,30 @@ def initialization(n_groups, N, rm, rM, mm, mM, v0m, v0M, s, am):
     v0 = v0m + (v0M - v0m) * np.random.rand(N, 1)  # random desired speed
     v = 0 * np.ones((N, 2))  # initial speed
     th = 2 * np.pi * np.random.rand(N, 1) - np.pi  # initial orientation
+
+    th[0] = -3.1416
+    th[1] = -2.856
+    th[2] = -2.5704
+    th[3] = -2.2848
+    th[4] = -1.9992
+    th[5] = -1.7136
+    th[6] = -1.428
+    th[7] = -1.1424
+    th[8] = -0.8568
+    th[9] = -0.5712
+    th[10] = -0.2856
+    th[11] = 0.0
+    th[12] = 0.2856
+    th[13] = 0.5712
+    th[14] = 0.8568
+    th[15] = 1.1424
+    th[16] = 1.428
+    th[17] = 1.7136
+    th[18] = 1.9992
+    th[19] = 2.2848
+    th[20] = 2.5704
+    th[21] = 2.856
+
     omg = 0  # initial angular velocity
 
     r = np.empty((N, 1), dtype=float)

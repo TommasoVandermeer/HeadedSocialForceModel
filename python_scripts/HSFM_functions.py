@@ -87,7 +87,7 @@ def HSFM_system(t, X, N, n_groups, map_walls, num_walls, r, m, J, v0, group_memb
         position[i, :] = [X[6 * i], X[6 * i + 1]]
         vel[i, :] = [X[6 * i + 3] * np.cos(X[6 * i + 2]), X[6 * i + 3] * np.sin(X[6 * i + 2])]
 
-    e = config.waypoints.waypoint_update(position, 1.5)
+    e = config.waypoints.waypoint_update(position, 0.3) # Default 1.5
 
     # Acting forces
     F0, Fe, ang = HSFM_forces(X, e, N, map_walls, num_walls, r, m, v0)
@@ -110,37 +110,63 @@ def HSFM_system(t, X, N, n_groups, map_walls, num_walls, r, m, J, v0, group_memb
     dX = np.zeros((6*N,1)).flatten()
 
     # center o of mass of each group
-    ci = {}
-    for k in range(len(n_groups)):
-        ci[k] = np.array([0, 0])
+    if(N>1):
+        ci = {}
+        for k in range(len(n_groups)):
+            ci[k] = np.array([0, 0])
 
-    for i in range(N):
-        ci[int(group_membership[i])] = ci[int(group_membership[i])] + position[i]
+        for i in range(N):
+            ci[int(group_membership[i])] = ci[int(group_membership[i])] + position[i]
 
-    for k in range(len(n_groups)):
-        ci[k] = ci[k] / n_groups[k]
+        for k in range(len(n_groups)):
+            ci[k] = ci[k] / n_groups[k]
 
-    for i in range(N):
-        a = ang[i]#td[I[i], i]
+        for i in range(N):
+            a = ang[i]#td[I[i], i]
+            kl = 0.3
+            kth = J[i] * kl * F_nV[i]
+            kom = J[i] * (1+alpha) * np.sqrt(kl * F_nV[i] / alpha)
+
+            dX[6*i] = X[6*i+3] * np.cos(X[6*i+2]) - X[6*i+4] * np.sin(X[6*i+2])
+            dX[6*i+1] = X[6*i+3] * np.sin(X[6*i+2]) + X[6*i+4] * np.cos(X[6*i+2])
+            dX[6*i+2] = X[6*i+5]
+
+            # Here we substitute the step function in the definition of the group
+            # cohesion forces with a sigmoid
+            if (n_groups[i]>1) :
+                p_i = ci[int(group_membership[i])]-position[i]
+
+                uf_group = k1g * (1+np.tanh(5*(np.abs(np.dot(p_i, [np.cos(X[6*i+2]), np.sin(X[6*i+2])])-d_f)-3))) * \
+                        np.dot(p_i / np.linalg.norm(p_i), [np.cos(X[6*i+2]), np.sin(X[6*i+2])])
+                uo_group = k2g * (1+np.tanh(5*(np.abs(np.dot(p_i, [-np.sin(X[6*i+2]), np.cos(X[6*i+2])])-d_o)-3))) * \
+                        np.dot(p_i / np.linalg.norm(p_i), [-np.sin(X[6*i+2]), np.cos(X[6*i+2])])
+                
+                dX[6*i+3] = 1 / m[i] * (np.dot(FT[i], [np.cos(X[6*i+2]), np.sin(X[6*i+2])]) + uf_group)
+                dX[6*i+4] = 1 / m[i] * (ko*np.dot(Fe[i], [-np.sin(X[6*i+2]), np.cos(X[6*i+2])]) - kd * X[6*i+4] + uo_group)
+                dX[6*i+5] = 1 / J[i] * (-kth * a - kom * X[6*i+5])
+            else:
+                uf_group = 0.0
+                uo_group = 0.0
+
+                dX[6*i+3] = 1 / m[i] * (np.dot(FT[i], [np.cos(X[6*i+2]), np.sin(X[6*i+2])]) + uf_group)
+                dX[6*i+4] = 1 / m[i] * (ko*np.dot(Fe[i], [-np.sin(X[6*i+2]), np.cos(X[6*i+2])]) - kd * X[6*i+4] + uo_group)
+                dX[6*i+5] = 1 / J[i] * (-kth * a - kom * X[6*i+5])
+
+    else:
+        a = ang[0]#td[I[i], i]
         kl = 0.3
-        kth = J[i] * kl * F_nV[i]
-        kom = J[i] * (1+alpha) * np.sqrt(kl * F_nV[i] / alpha)
+        kth = J[0] * kl * F_nV[0]
+        kom = J[0] * (1+alpha) * np.sqrt(kl * F_nV[0] / alpha)
 
-        p_i = ci[int(group_membership[i])]-position[i]
+        dX[0] = X[3] * np.cos(X[2]) - X[4] * np.sin(X[2])
+        dX[1] = X[3] * np.sin(X[2]) + X[4] * np.cos(X[2])
+        dX[2] = X[5]
 
-        dX[6*i] = X[6*i+3] * np.cos(X[6*i+2]) - X[6*i+4] * np.sin(X[6*i+2])
-        dX[6*i+1] = X[6*i+3] * np.sin(X[6*i+2]) + X[6*i+4] * np.cos(X[6*i+2])
-        dX[6*i+2] = X[6*i+5]
+        uf_group = 0.0
+        uo_group = 0.0
 
-        # Here we substitute the step function in the definition of the group
-        # cohesion forces with a sigmoid
-        uf_group = k1g * (1+np.tanh(5*(np.abs(np.dot(p_i, [np.cos(X[6*i+2]), np.sin(X[6*i+2])])-d_f)-3))) * \
-                   np.dot(p_i / np.linalg.norm(p_i), [np.cos(X[6*i+2]), np.sin(X[6*i+2])])
-        uo_group = k2g * (1+np.tanh(5*(np.abs(np.dot(p_i, [-np.sin(X[6*i+2]), np.cos(X[6*i+2])])-d_o)-3))) * \
-                   np.dot(p_i / np.linalg.norm(p_i), [-np.sin(X[6*i+2]), np.cos(X[6*i+2])])
-
-        dX[6*i+3] = 1 / m[i] * (np.dot(FT[i], [np.cos(X[6*i+2]), np.sin(X[6*i+2])]) + uf_group)
-        dX[6*i+4] = 1 / m[i] * (ko*np.dot(Fe[i], [-np.sin(X[6*i+2]), np.cos(X[6*i+2])]) - kd * X[6*i+4] + uo_group)
-        dX[6*i+5] = 1 / J[i] * (-kth * a - kom * X[6*i+5])
+        dX[3] = 1 / m[0] * (np.dot(FT[0], [np.cos(X[2]), np.sin(X[2])]) + uf_group)
+        dX[4] = 1 / m[0] * (ko*np.dot(Fe[0], [-np.sin(X[2]), np.cos(X[2])]) - kd * X[4] + uo_group)
+        dX[5] = 1 / J[0] * (-kth * a - kom * X[5])
 
     return dX
